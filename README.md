@@ -1,13 +1,13 @@
 # OWASP-Testing-Project
 OWASP Testing Project
 
-##Requirements
+### Requirements
 
  * SQL Server Express 2016
  * .NET Framework 4.6.2
  * Visual Studio 2017
 
-##Installation
+### Installation
 
  1. Open solution
  2. Right click "GodelTech.Owasp.Database" project in the "Solution Explorer" window and select "Publish" from the pop-up menu
