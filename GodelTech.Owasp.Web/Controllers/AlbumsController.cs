@@ -1,4 +1,4 @@
-﻿using Owasp.Sqli.Repositories;
+﻿using GodelTech.Owasp.Web.Repositories;
 using System.Web.Mvc;
 
 namespace GodelTech.Owasp.Web.Controllers
