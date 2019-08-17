@@ -66,5 +66,6 @@
   <ItemGroup>
     <Build Include="Tables\Artist.sql" />
     <Build Include="Tables\Genre.sql" />
+    <Build Include="Tables\User.sql" />
   </ItemGroup>
 </Project>
