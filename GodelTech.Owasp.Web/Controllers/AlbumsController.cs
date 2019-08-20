@@ -10,6 +10,7 @@ using GodelTech.Owasp.Web.Models;
 
 namespace GodelTech.Owasp.Web.Controllers
 {
+    [Authorize]
     public class AlbumsController : Controller
     {
         AlbumRepository repository;
