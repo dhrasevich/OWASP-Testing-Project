@@ -50,12 +50,14 @@ namespace GodelTech.Owasp.Web.Repositories
 
         public int AddIfNotExist(IEnumerable<Album> albums)
         {
-            if (albums == null || !albums.Any())
+            var enumerable = albums.ToList();
+
+            if (albums == null || !enumerable.Any())
             {
                 throw new ArgumentNullException(nameof(albums));
             }
 
-            var albumsValues = string.Join(",", albums.Select(x => $"({x.ArtistId}, {x.GenreId}, '{x.Title}', {x.Price}, '{x.AlbumArtUrl}')"));
+            var albumsValues = string.Join(",", enumerable.Select(x => $"({x.ArtistId}, {x.GenreId}, '{x.Title}', {x.Price}, '{x.AlbumArtUrl}')"));
 
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendLine("MERGE INTO Album AS Target");
