@@ -3,9 +3,9 @@
 namespace GodelTech.Owasp.Web.Models
 {
     [DataContract]
-    public class AlbumWithImage : Album
+    public class AlbumWithEntryPoint : Album
     {
         [DataMember]
-        public dynamic Image { get; set; }
+        public dynamic EntryPoint { get; set; }
     }
 }
