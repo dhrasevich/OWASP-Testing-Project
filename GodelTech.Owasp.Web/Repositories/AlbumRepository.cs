@@ -48,27 +48,27 @@ namespace GodelTech.Owasp.Web.Repositories
             }
         }
 
-        public int AddIfNotExist(IEnumerable<AlbumWithImage> albums)
+        public int AddIfNotExist(IEnumerable<Album> albums)
         {
             if (albums == null || !albums.Any())
             {
                 throw new ArgumentNullException(nameof(albums));
             }
 
-            var albumsValues = string.Join(",", albums.Select(x => $"({x.ArtistId}, {x.GenreId}, {x.Title}, {x.Price}, {x.AlbumArtUrl})"));
+            var albumsValues = string.Join(",", albums.Select(x => $"({x.ArtistId}, {x.GenreId}, '{x.Title}', {x.Price}, '{x.AlbumArtUrl}')"));
 
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendLine("MERGE INTO Album AS Target");
             stringBuilder.AppendLine($"USING (VALUES {albumsValues})");
-            stringBuilder.AppendLine("AS Source (GenerId, ArtistId, Title, Price, AlbumArtUrl)");
-            stringBuilder.AppendLine("ON Target.GenerId = Source.GenerId");
+            stringBuilder.AppendLine("AS Source (GenreId, ArtistId, Title, Price, AlbumArtUrl)");
+            stringBuilder.AppendLine("ON Target.GenreId = Source.GenreId");
             stringBuilder.AppendLine("AND Target.ArtistId = Source.ArtistId");
             stringBuilder.AppendLine("AND Target.Title = Source.Title");
             stringBuilder.AppendLine("AND Target.Price = Source.Price");
             stringBuilder.AppendLine("AND Target.AlbumArtUrl = Source.AlbumArtUrl");
             stringBuilder.AppendLine("WHEN NOT MATCHED BY TARGET THEN");
-            stringBuilder.AppendLine("INSERT (GenerId, ArtistId, Title, Price, AlbumArtUrl)");
-            stringBuilder.AppendLine("VALUES (source.GenerId, source.ArtistId, source.Title, source.Price, source.AlbumArtUrl)");
+            stringBuilder.AppendLine("INSERT (GenreId, ArtistId, Title, Price, AlbumArtUrl)");
+            stringBuilder.AppendLine("VALUES (source.GenreId, source.ArtistId, source.Title, source.Price, source.AlbumArtUrl);");
 
             var sql = stringBuilder.ToString();
 
