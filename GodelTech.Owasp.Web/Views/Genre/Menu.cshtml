@@ -1,0 +1,16 @@
+﻿@using GodelTech.Owasp.Web.Models;
+
+@model IEnumerable<Genre>
+
+@{
+    Layout = null;
+}
+
+<div class="nav-scroller py-1 mb-2">
+    <nav class="nav d-flex justify-content-between">
+        @foreach (var item in Model)
+        {
+            <a class="p-2 text-muted" href="@Url.Action("List","Album", new { id = item.GenreId})">@item.Name</a>
+        }
+    </nav>
+</div>
