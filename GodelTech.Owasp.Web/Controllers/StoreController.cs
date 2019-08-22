@@ -31,5 +31,12 @@ namespace GodelTech.Owasp.Web.Controllers
             var model = repository.GetList(id);
             return View(model);
         }
+
+        public ActionResult Page(int skip, int take)
+        {
+            var repository = new AlbumRepository();
+            var model = repository.GetList(skip, take);
+            return PartialView("_List", model);
+        }
     }
 }

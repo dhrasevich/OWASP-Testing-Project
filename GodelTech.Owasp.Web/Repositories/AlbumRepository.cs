@@ -70,6 +70,30 @@ namespace GodelTech.Owasp.Web.Repositories
             }
         }
 
+        public IEnumerable<Album> GetList(int skip, int take)
+        {
+            var sql = @"SELECT * FROM Album
+                        INNER JOIN Artist on Artist.ArtistId = Album.ArtistId
+                        ORDER BY CURRENT_TIMESTAMP
+                        OFFSET @Skip ROWS
+                        FETCH NEXT @Take ROWS ONLY";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                using (var cmd = new SqlCommand(sql, connection))
+                {
+                    cmd.Parameters.AddWithValue("@Skip", skip);
+                    cmd.Parameters.AddWithValue("@Take", take);
+
+                    connection.Open();
+
+                    var reader = cmd.ExecuteReader();
+                    var records = GetRecords(reader);
+                    return records;
+                }
+            }
+        }
+
         private static IEnumerable<Album> GetRecords(IDataReader reader)
         {
             var records = new List<Album>();

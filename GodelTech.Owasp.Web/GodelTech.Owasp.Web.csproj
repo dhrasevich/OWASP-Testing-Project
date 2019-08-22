@@ -117,7 +117,6 @@
     <Compile Include="Controllers\StoreController.cs" />
     <Compile Include="Controllers\GenreController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\AlbumsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -212,6 +211,7 @@
     <Content Include="Views\Genre\Menu.cshtml" />
     <Content Include="Views\Store\Albums.cshtml" />
     <Content Include="Views\Account\SignIn.cshtml" />
+    <Content Include="Views\Store\_List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
