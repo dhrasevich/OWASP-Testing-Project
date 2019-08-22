@@ -6,14 +6,16 @@
     <div class="col-md-6 px-0">
         <h1 class="display-4 font-italic">Music like a dream</h1>
         <p class="lead my-3">
-            We are a group of enthusiastic independent UK record dealers bringing you a huge selection of second hand vinyl records and CDs online. 
+            We are a group of enthusiastic independent UK record dealers bringing you a huge selection of second hand vinyl records and CDs online.
         </p>
-        <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Album" aria-label="Album" aria-describedby="button-addon2">
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>
+        <form action="@Url.Action("Search","Store")">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Album" aria-label="Album" aria-describedby="button-addon2" name="searchkey">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 
