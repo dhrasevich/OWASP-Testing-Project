@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodelTech.Owasp.InsecureDeserialization", "GodelTech.Owasp.InsecureDeserialization\GodelTech.Owasp.InsecureDeserialization.csproj", "{7B411C0B-E641-4538-9FAA-2F1ADBB18E0C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +30,10 @@ Global
 		{2AAD1C71-1EDE-4D38-8DBD-B54CD9C2DFCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2AAD1C71-1EDE-4D38-8DBD-B54CD9C2DFCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2AAD1C71-1EDE-4D38-8DBD-B54CD9C2DFCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B411C0B-E641-4538-9FAA-2F1ADBB18E0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B411C0B-E641-4538-9FAA-2F1ADBB18E0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B411C0B-E641-4538-9FAA-2F1ADBB18E0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B411C0B-E641-4538-9FAA-2F1ADBB18E0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
