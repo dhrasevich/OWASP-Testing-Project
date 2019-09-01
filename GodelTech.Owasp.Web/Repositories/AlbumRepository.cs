@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 
 namespace GodelTech.Owasp.Web.Repositories
 {
@@ -90,6 +91,43 @@ namespace GodelTech.Owasp.Web.Repositories
                     var reader = cmd.ExecuteReader();
                     var records = GetRecords(reader);
                     return records;
+                }
+            }
+        }
+
+        public int AddIfNotExist(IEnumerable<Album> albums)
+        {
+            var enumerable = albums.ToList();
+
+            if (albums == null || !enumerable.Any())
+            {
+                throw new ArgumentNullException(nameof(albums));
+            }
+
+            var albumsValues = string.Join(",", enumerable.Select(x => $"({x.ArtistId}, {x.GenreId}, '{x.Title}', {x.Price}, '{x.AlbumArtUrl}')"));
+
+            var stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine("MERGE INTO Album AS Target");
+            stringBuilder.AppendLine($"USING (VALUES {albumsValues})");
+            stringBuilder.AppendLine("AS Source (GenreId, ArtistId, Title, Price, AlbumArtUrl)");
+            stringBuilder.AppendLine("ON Target.GenreId = Source.GenreId");
+            stringBuilder.AppendLine("AND Target.ArtistId = Source.ArtistId");
+            stringBuilder.AppendLine("AND Target.Title = Source.Title");
+            stringBuilder.AppendLine("AND Target.Price = Source.Price");
+            stringBuilder.AppendLine("AND Target.AlbumArtUrl = Source.AlbumArtUrl");
+            stringBuilder.AppendLine("WHEN NOT MATCHED BY TARGET THEN");
+            stringBuilder.AppendLine("INSERT (GenreId, ArtistId, Title, Price, AlbumArtUrl)");
+            stringBuilder.AppendLine("VALUES (source.GenreId, source.ArtistId, source.Title, source.Price, source.AlbumArtUrl);");
+
+            var sql = stringBuilder.ToString();
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                using (var cmd = new SqlCommand(sql, connection))
+                {
+                    connection.Open();
+
+                    return cmd.ExecuteNonQuery();
                 }
             }
         }

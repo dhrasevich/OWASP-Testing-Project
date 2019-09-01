@@ -1,0 +1,92 @@
+﻿@using GodelTech.Owasp.Web.Models;
+
+@model IEnumerable<Album>
+
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+    <h1 class="h2">Dashboard</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group mr-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#importBinaryFileModal">
+                Import (Binary Formatter)
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#importJsonFileModal">
+                Import (NewtonSoft Json)
+            </button>
+        </div>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">@nameof(Album.Title)</th>
+            <th scope="col">@nameof(Album.Artist)</th>
+            <th scope="col">@nameof(Album.Price)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <th scope="row">@item.AlbumId</th>
+                <td>@item.Title</td>
+                <td>@item.Artist.Name</td>
+                <td>@item.Price</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>@(ViewBag.Message)</div>
+
+<div class="modal" id="importBinaryFileModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Import albums from file with Binary Formatter structure</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            @using (Html.BeginForm("ImportFromBinaryFile", "Albums", FormMethod.Post,
+                new { enctype = "multipart/form-data" }))
+            {
+                <div class="modal-body">
+                    @Html.TextBox("file", "", new { type = "file" })
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Import</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="importJsonFileModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Import albums from file with Binary Formatter structure</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            @using (Html.BeginForm("ImportFromJsonFile", "Albums", FormMethod.Post,
+                new { enctype = "multipart/form-data" }))
+            {
+                <div class="modal-body">
+                    @Html.TextBox("file", "", new { type = "file" })
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Import</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>

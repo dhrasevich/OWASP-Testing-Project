@@ -15,7 +15,7 @@ namespace GodelTech.Owasp.Web.Repositories
 
         public User Get(string email, string password)
         {
-            var sql = $"SELECT * FROM [GodelTech.Owasp.Database].[dbo].[User] WHERE Email = '{email}' AND Password = '{HashGenerator.CalculateMd5Hash(password)}'";
+            var sql = $"SELECT * FROM [User] WHERE Email = '{email}' AND Password = '{HashGenerator.CalculateMd5Hash(password)}'";
 
             using (var connection = new SqlConnection(connectionString))
             {

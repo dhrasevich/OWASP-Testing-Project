@@ -59,6 +59,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -114,6 +115,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\StoreController.cs" />
     <Compile Include="Controllers\GenreController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
@@ -125,6 +127,7 @@
     <Compile Include="Models\Album.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\ViewModel\LoginViewModel.cs" />
+    <Compile Include="Models\AlbumWithEntryPoint.cs" />
     <Compile Include="Models\Artist.cs" />
     <Compile Include="Models\Genre.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -212,6 +215,7 @@
     <Content Include="Views\Store\Albums.cshtml" />
     <Content Include="Views\Account\SignIn.cshtml" />
     <Content Include="Views\Store\_List.cshtml" />
+    <Content Include="Views\Dashboard\Import.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -224,6 +228,12 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\index.d.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GodelTech.Owasp.InsecureDeserialization\GodelTech.Owasp.InsecureDeserialization.csproj">
+      <Project>{7b411c0b-e641-4538-9faa-2f1adbb18e0c}</Project>
+      <Name>GodelTech.Owasp.InsecureDeserialization</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
