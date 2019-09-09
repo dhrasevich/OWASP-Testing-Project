@@ -1,18 +1,43 @@
-﻿
-@{
-    ViewBag.Title = "Index";
-}
+﻿@using GodelTech.Owasp.Web.Models;
 
-<h2>Albums content will be added soon</h2>
+@model IEnumerable<Album>
 
-<p>
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#importBinaryFileModal">
-        Import albums (Binary Formatter)
-    </button>
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#importJsonFileModal">
-        Import albums (NewtonSoft Json)
-    </button>
-</p>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+    <h1 class="h2">Dashboard</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group mr-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#importBinaryFileModal">
+                Import (Binary Formatter)
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#importJsonFileModal">
+                Import (NewtonSoft Json)
+            </button>
+        </div>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">@nameof(Album.Title)</th>
+            <th scope="col">@nameof(Album.Artist)</th>
+            <th scope="col">@nameof(Album.Price)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <th scope="row">@item.AlbumId</th>
+                <td>@item.Title</td>
+                <td>@item.Artist.Name</td>
+                <td>@item.Price</td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 <div>@(ViewBag.Message)</div>
 
@@ -30,7 +55,7 @@
                 new { enctype = "multipart/form-data" }))
             {
                 <div class="modal-body">
-                    @Html.TextBox("file", "", new {type = "file"})
+                    @Html.TextBox("file", "", new { type = "file" })
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

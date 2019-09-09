@@ -11,35 +11,23 @@ using GodelTech.Owasp.Web.Models;
 namespace GodelTech.Owasp.Web.Controllers
 {
     [Authorize]
-    public class AlbumsController : Controller
+    public class DashboardController : Controller
     {
         AlbumRepository repository;
         private IInsecureDeserializer<string, IEnumerable<Album>> binaryFormatterDeserializer;
         private IInsecureDeserializer<string, IEnumerable<AlbumWithEntryPoint>> newtonSoftJsonDeserializer;
 
-        public AlbumsController()
+        public DashboardController()
         {
             repository = new AlbumRepository();
             binaryFormatterDeserializer = new InsecureBinaryDeserializer<IEnumerable<Album>>();
             newtonSoftJsonDeserializer = new InsecureNewtonSoftJsonDeserializer<IEnumerable<AlbumWithEntryPoint>>();
         }
 
-        public ActionResult Index()
+        public ActionResult Import()
         {
-            return View();
-        }
-
-        public ActionResult Details(string id)
-        {
-            var repository = new AlbumRepository();
-            var model = repository.Get(id);
-            return View("Index", model);
-        }
-
-        public ActionResult List(string searchKey)
-        {
-            var model = repository.GetList(searchKey);
-            return View("Index", model);
+            var model = new AlbumRepository().GetList(0, int.MaxValue);
+            return View(model);
         }
 
         [HttpPost]

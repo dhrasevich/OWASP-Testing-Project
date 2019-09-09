@@ -17,5 +17,7 @@ namespace GodelTech.Owasp.Web.Models
         public decimal Price { get; set; }
         [DataMember]
         public string AlbumArtUrl { get; set; }
+
+        public Artist Artist { set; get; }
     }
 }

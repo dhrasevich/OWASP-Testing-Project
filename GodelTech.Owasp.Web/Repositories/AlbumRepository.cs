@@ -22,7 +22,7 @@ namespace GodelTech.Owasp.Web.Repositories
             {
                 using (var cmd = new SqlCommand(sql, connection))
                 {
-                     connection.Open();
+                    connection.Open();
 
                     var reader = cmd.ExecuteReader();
                     var record = GetRecords(reader).SingleOrDefault();
@@ -33,12 +33,59 @@ namespace GodelTech.Owasp.Web.Repositories
 
         public IEnumerable<Album> GetList(string searchKey)
         {
-            var sql = "SELECT * FROM Album WHERE name like '%" + searchKey + "%'";
+            var sql = @"SELECT * FROM Album 
+                        INNER JOIN Artist on Artist.ArtistId = Album.ArtistId
+                        WHERE Title like '%" + searchKey + "%'";
 
             using (var connection = new SqlConnection(connectionString))
             {
                 using (var cmd = new SqlCommand(sql, connection))
                 {
+                    connection.Open();
+
+                    var reader = cmd.ExecuteReader();
+                    var records = GetRecords(reader);
+                    return records;
+                }
+            }
+        }
+
+        public IEnumerable<Album> GetList(int genreId)
+        {
+            var sql = @"SELECT * FROM Album
+                        INNER JOIN Artist on Artist.ArtistId = Album.ArtistId
+                        WHERE GenreId = @GenreId";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                using (var cmd = new SqlCommand(sql, connection))
+                {
+                    cmd.Parameters.AddWithValue("@GenreId", genreId);
+
+                    connection.Open();
+
+                    var reader = cmd.ExecuteReader();
+                    var records = GetRecords(reader);
+                    return records;
+                }
+            }
+        }
+
+        public IEnumerable<Album> GetList(int skip, int take)
+        {
+            var sql = @"SELECT * FROM Album
+                        INNER JOIN Artist on Artist.ArtistId = Album.ArtistId
+                        ORDER BY CURRENT_TIMESTAMP
+                        OFFSET @Skip ROWS
+                        FETCH NEXT @Take ROWS ONLY";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                using (var cmd = new SqlCommand(sql, connection))
+                {
+                    cmd.Parameters.AddWithValue("@Skip", skip);
+                    cmd.Parameters.AddWithValue("@Take", take);
+
                     connection.Open();
 
                     var reader = cmd.ExecuteReader();
@@ -107,6 +154,16 @@ namespace GodelTech.Owasp.Web.Repositories
                 ArtistId = GetFieldValue<int>(reader, nameof(Album.ArtistId)),
                 Title = GetFieldValue<string>(reader, nameof(Album.Title)),
                 Price = GetFieldValue<decimal>(reader, nameof(Album.Price)),
+                Artist = BuildArtist(reader)
+            };
+        }
+
+        private static Artist BuildArtist(IDataReader reader)
+        {
+            return new Artist
+            {
+                ArtistId = GetFieldValue<int>(reader, nameof(Artist.ArtistId)),
+                Name = GetFieldValue<string>(reader, nameof(Artist.Name))
             };
         }
 
