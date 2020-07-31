@@ -35,14 +35,15 @@ namespace GodelTech.Owasp.Web.Controllers
         {
             try
             {
-                ViewBag.Message = ImportAlbums(file, binaryFormatterDeserializer);
-                return View("Index");
+                ViewBag.ImportMessage = ImportAlbums(file, binaryFormatterDeserializer);
             }
             catch
             {
-                ViewBag.Message = "Albums import failed";
-                return View("Index");
+                ViewBag.ImportMessage = "Albums import failed";
             }
+
+            var model = new AlbumRepository().GetList(0, int.MaxValue);
+            return View("Import", model);
         }
 
         [HttpPost]
@@ -51,13 +52,14 @@ namespace GodelTech.Owasp.Web.Controllers
             try
             {
                 ViewBag.Message = ImportAlbums(file, newtonSoftJsonDeserializer);
-                return View("Index");
             }
             catch
             {
                 ViewBag.Message = "Albums import failed";
-                return View("Index");
             }
+
+            var model = new AlbumRepository().GetList(0, int.MaxValue);
+            return View("Import", model);
         }
 
         private string ImportAlbums(

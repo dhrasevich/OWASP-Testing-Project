@@ -51,7 +51,7 @@
                 </button>
             </div>
 
-            @using (Html.BeginForm("ImportFromBinaryFile", "Albums", FormMethod.Post,
+            @using (Html.BeginForm("ImportFromBinaryFile", "Dashboard", FormMethod.Post,
                 new { enctype = "multipart/form-data" }))
             {
                 <div class="modal-body">
@@ -76,7 +76,7 @@
                 </button>
             </div>
 
-            @using (Html.BeginForm("ImportFromJsonFile", "Albums", FormMethod.Post,
+            @using (Html.BeginForm("ImportFromJsonFile", "Dashboard", FormMethod.Post,
                 new { enctype = "multipart/form-data" }))
             {
                 <div class="modal-body">
