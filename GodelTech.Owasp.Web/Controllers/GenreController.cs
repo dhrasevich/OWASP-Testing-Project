@@ -1,15 +1,27 @@
-﻿using GodelTech.Owasp.Web.Repositories;
-using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using GodelTech.Owasp.Web.Helpers;
+using GodelTech.Owasp.Web.Models;
+using GodelTech.Owasp.Web.Repositories.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GodelTech.Owasp.Web.Controllers
 {
-    public class GenreController : Controller
+    [Authorize]
+    [ApiController]
+    [Route("[controller]")]
+    public class GenreController : ControllerBase
     {
-        public ActionResult Menu()
+        private readonly IGenreRepository _repository;
+
+        public GenreController(IGenreRepository repository)
         {
-            var repository = new GenreRepository();
-            var model = repository.Get();
-            return PartialView(model);
+            _repository = repository;
+        }
+
+        [HttpGet]
+        public IEnumerable<Genre> All()
+        {
+            return _repository.Get();
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
-using Newtonsoft.Json;
 using GodelTech.Owasp.InsecureDeserialization.Interfaces;
+using Newtonsoft.Json;
 
 namespace GodelTech.Owasp.InsecureDeserialization.Implementations
 {

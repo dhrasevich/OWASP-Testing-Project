@@ -1,42 +1,45 @@
-﻿using GodelTech.Owasp.Web.Repositories;
-using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using GodelTech.Owasp.Web.Helpers;
+using GodelTech.Owasp.Web.Models;
+using GodelTech.Owasp.Web.Repositories.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GodelTech.Owasp.Web.Controllers
 {
-    public class StoreController : Controller
+    [Authorize]
+    [ApiController]
+    [Route("[controller]")]
+    public class StoreController : ControllerBase
     {
-        AlbumRepository repository;
+        private readonly IAlbumRepository _repository;
 
-        public StoreController()
+        public StoreController(IAlbumRepository repository)
         {
-            repository = new AlbumRepository();
+            _repository = repository;
         }
 
-        public ActionResult Album(string id)
+        [HttpGet("{id}")]
+        public Album Album(string id)
         {
-            var repository = new AlbumRepository();
-            var model = repository.Get(id);
-            return View(model);
+            return _repository.Get(id);
         }
 
-        public ActionResult Search(string searchKey)
+        [HttpGet("{searchKey}")]
+        public IEnumerable<Album> Search(string searchKey)
         {
-            var model = repository.GetList(searchKey);
-            return View("Albums", model);
+            return _repository.GetList(searchKey);
         }
 
-        public ActionResult Albums(int id)
+        [HttpGet("{genreId:int}")]
+        public IEnumerable<Album> Albums(int genreId)
         {
-            var repository = new AlbumRepository();
-            var model = repository.GetList(id);
-            return View(model);
+            return _repository.GetList(genreId);
         }
 
-        public ActionResult Page(int skip, int take)
+        [HttpGet("{skip:int}/{take:int}")]
+        public IEnumerable<Album> Page(int skip, int take)
         {
-            var repository = new AlbumRepository();
-            var model = repository.GetList(skip, take);
-            return PartialView("_List", model);
+            return _repository.GetList(skip, take);
         }
     }
 }

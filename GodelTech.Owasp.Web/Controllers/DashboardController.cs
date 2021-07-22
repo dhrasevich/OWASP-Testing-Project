@@ -1,89 +1,94 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
-using GodelTech.Owasp.Web.Repositories;
-using System.Web.Mvc;
+using GodelTech.Owasp.Web.Helpers;
 using GodelTech.Owasp.InsecureDeserialization.Implementations;
 using GodelTech.Owasp.InsecureDeserialization.Interfaces;
 using GodelTech.Owasp.Web.Models;
+using GodelTech.Owasp.Web.Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GodelTech.Owasp.Web.Controllers
 {
     [Authorize]
-    public class DashboardController : Controller
+    [ApiController]
+    [Route("[controller]")]
+    public class DashboardController : ControllerBase
     {
-        AlbumRepository repository;
-        private IInsecureDeserializer<string, IEnumerable<Album>> binaryFormatterDeserializer;
-        private IInsecureDeserializer<string, IEnumerable<AlbumWithEntryPoint>> newtonSoftJsonDeserializer;
+        private readonly IAlbumRepository _albumRepository;
 
-        public DashboardController()
+        private readonly IInsecureDeserializer<string, IEnumerable<Album>> _binaryFormatterDeserializer;
+        private readonly IInsecureDeserializer<string, IEnumerable<AlbumWithEntryPoint>> _newtonSoftJsonDeserializer;
+
+        public DashboardController(IAlbumRepository albumRepository)
         {
-            repository = new AlbumRepository();
-            binaryFormatterDeserializer = new InsecureBinaryDeserializer<IEnumerable<Album>>();
-            newtonSoftJsonDeserializer = new InsecureNewtonSoftJsonDeserializer<IEnumerable<AlbumWithEntryPoint>>();
+            _albumRepository = albumRepository;
+            _binaryFormatterDeserializer = new InsecureBinaryDeserializer<IEnumerable<Album>>();
+            _newtonSoftJsonDeserializer = new InsecureNewtonSoftJsonDeserializer<IEnumerable<AlbumWithEntryPoint>>();
         }
 
-        public ActionResult Import()
+        [HttpGet]
+        public IEnumerable<Album> Import()
         {
-            var model = new AlbumRepository().GetList(0, int.MaxValue);
-            return View(model);
+            return _albumRepository.GetList(0, int.MaxValue);
         }
 
-        [HttpPost]
-        public ActionResult ImportFromBinaryFile(HttpPostedFileBase file)
-        {
-            try
-            {
-                ViewBag.Message = ImportAlbums(file, binaryFormatterDeserializer);
-                return View("Index");
-            }
-            catch
-            {
-                ViewBag.Message = "Albums import failed";
-                return View("Index");
-            }
-        }
-
-        [HttpPost]
-        public ActionResult ImportFromJsonFile(HttpPostedFileBase file)
-        {
-            try
-            {
-                ViewBag.Message = ImportAlbums(file, newtonSoftJsonDeserializer);
-                return View("Index");
-            }
-            catch
-            {
-                ViewBag.Message = "Albums import failed";
-                return View("Index");
-            }
-        }
-
-        private string ImportAlbums(
-            HttpPostedFileBase file,
-            IInsecureDeserializer<string, IEnumerable<Album>> fileDeserializer)
-        {
-            if (!IsFileProvided(file))
-            {
-                return "Albums were not imported. File is not provided or empty";
-            }
-
-            var albums = GetAlbumsWithImageFromFile(file.InputStream, fileDeserializer);
-
-            var enumerable = albums.ToList();
-
-            if (!IsAlbumsRetrievedFromFile(enumerable))
-            {
-                return "Albums were not imported. File does not contain albums";
-            }
-
-            var numberOfImportedAlbums = repository.AddIfNotExist(enumerable);
-
-            return CreateSuccessfulImportMessage(numberOfImportedAlbums);
-        }
-
-        private string CreateSuccessfulImportMessage(int numberOfImportedAlbums)
+        //
+        // [HttpPost("ImportFromBinaryFile")]
+        // public ActionResult ImportFromBinaryFile(IFormFile file)
+        // {
+        //     try
+        //     {
+        //         ViewBag.Message = ImportAlbums(file, _binaryFormatterDeserializer);
+        //         return View("Import");
+        //     }
+        //     catch
+        //     {
+        //         ViewBag.Message = "Albums import failed";
+        //         return View("Import");
+        //     }
+        // }
+        //
+        // [HttpPost("ImportFromJsonFile")]
+        // public ActionResult ImportFromJsonFile(IFormFile file)
+        // {
+        //     try
+        //     {
+        //         ViewBag.Message = ImportAlbums(file, _newtonSoftJsonDeserializer);
+        //         return View("Import");
+        //     }
+        //     catch
+        //     {
+        //         ViewBag.Message = "Albums import failed";
+        //         return View("Import");
+        //     }
+        // }
+        //
+        // private string ImportAlbums(
+        //     IFormFile file,
+        //     IInsecureDeserializer<string, IEnumerable<Album>> fileDeserializer)
+        // {
+        //     if (!IsFileProvided(file))
+        //     {
+        //         return "Albums were not imported. File is not provided or empty";
+        //     }
+        //
+        //     var albums = GetAlbumsWithImageFromFile(file.InputStream, fileDeserializer);
+        //
+        //     var enumerable = albums.ToList();
+        //
+        //     if (!IsAlbumsRetrievedFromFile(enumerable))
+        //     {
+        //         return "Albums were not imported. File does not contain albums";
+        //     }
+        //
+        //     var numberOfImportedAlbums = _albumRepository.AddIfNotExist(enumerable);
+        //
+        //     return CreateSuccessfulImportMessage(numberOfImportedAlbums);
+        // }
+        //
+        private static string CreateSuccessfulImportMessage(int numberOfImportedAlbums)
         {
             return numberOfImportedAlbums > 0 ?
                 numberOfImportedAlbums == 1 ?
@@ -91,25 +96,26 @@ namespace GodelTech.Owasp.Web.Controllers
                     $"{numberOfImportedAlbums} albums were imported" :
                 "None albums were imported";
         }
-
-        private bool IsFileProvided(HttpPostedFileBase file)
+        
+        private bool IsFileProvided(IFormFile file)
         {
-            return file != null && file.ContentLength > 0;
+            return file != null; // && file.ContentLength > 0;
         }
-
-        private bool IsAlbumsRetrievedFromFile(IEnumerable<Album> albums)
+        
+        private static bool IsAlbumsRetrievedFromFile(IEnumerable<Album> albums)
         {
             return albums != null && albums.Any();
         }
-
-        private IEnumerable<Album> GetAlbumsWithImageFromFile(
+        
+        private static IEnumerable<Album> GetAlbumsWithImageFromFile(
             Stream fileStream,
             IInsecureDeserializer<string, IEnumerable<Album>> fileDeserializer)
         {
-            using (var streamReader = new StreamReader(fileStream))
-            {
-                return fileDeserializer.Deserialize(streamReader.ReadToEnd());
-            }
+            // full path to file in temp location
+            var filePath = Path.GetTempFileName();
+
+            using var streamReader = new StreamReader(fileStream);
+            return fileDeserializer.Deserialize(streamReader.ReadToEnd());
         }
     }
 }

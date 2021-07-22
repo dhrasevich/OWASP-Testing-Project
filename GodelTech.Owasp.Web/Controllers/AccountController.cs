@@ -1,64 +1,29 @@
-﻿using System.Security.Principal;
-using System.Threading.Tasks;
-using System.Web.Mvc;
-using System.Web.Security;
-using GodelTech.Owasp.Web.Models.ViewModel;
-using GodelTech.Owasp.Web.Repositories;
+﻿using GodelTech.Owasp.Web.Models;
+using GodelTech.Owasp.Web.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GodelTech.Owasp.Web.Controllers
 {
-    public class AccountController : Controller
+    [ApiController]
+    [Route("[controller]")]
+    public class AccountController : ControllerBase
     {
-        UserRepository userRepository;
+        private readonly IUserService _userService;
 
-        public AccountController()
+        public AccountController(IUserService service)
         {
-            userRepository = new UserRepository();
+            _userService = service;
         }
 
-        // GET: Account
-        [AllowAnonymous]
-        public ActionResult SignIn()
+        [HttpPost("/authenticate")]
+        public IActionResult Authenticate(AuthenticateRequest model)
         {
-            return View();
-        }
+            var response = _userService.Authenticate(model);
 
-        //
-        // POST: /Account/SignIn
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> SignIn(LoginViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
+            if (response == null)
+                return BadRequest(new { message = "Username or password is incorrect" });
 
-            var user = userRepository.Get(model.Email, model.Password);
-            if (user == null)
-            {
-                ModelState.AddModelError("", "Invalid login attempt.");
-                return View(model);
-            }
-                
-            FormsAuthentication.SetAuthCookie(user.Name, true);
-            System.Web.HttpCookie authCookie = System.Web.HttpContext.Current.Request.Cookies[FormsAuthentication.FormsCookieName];
-            System.Web.HttpContext.Current.User = new GenericPrincipal(new FormsIdentity(FormsAuthentication.Decrypt(authCookie.Value)), null);
-
-            return RedirectToAction("Index","Home");
-        }
-
-        //
-        // POST: /Account/LogOff
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> SignOut()
-        {
-            FormsAuthentication.SignOut();
-            System.Web.HttpContext.Current.User = new GenericPrincipal(new GenericIdentity(string.Empty), null);
-
-            return RedirectToAction("Index", "Home");
+            return Ok(response);
         }
     }
 };
