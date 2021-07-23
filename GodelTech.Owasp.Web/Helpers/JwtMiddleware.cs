@@ -3,7 +3,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GodelTech.Owasp.Web.Repositories.Interfaces;
 using GodelTech.Owasp.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -15,13 +14,11 @@ namespace GodelTech.Owasp.Web.Helpers
     {
         private readonly RequestDelegate _next;
         private readonly AppSettings _appSettings;
-        private readonly IUserRepository _repository;
 
-        public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings, IUserRepository repository)
+        public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings)
         {
             _next = next;
             _appSettings = appSettings.Value;
-            _repository = repository;
         }
 
         public async Task Invoke(HttpContext context, IUserService userService)
@@ -53,8 +50,8 @@ namespace GodelTech.Owasp.Web.Helpers
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
-                // attach user to context on successful jwt validation
-                context.Items["User"] = _repository.GetById(userId);
+                // attach user id to context on successful jwt validation
+                context.Items["userId"] = userId;
             }
             catch
             {

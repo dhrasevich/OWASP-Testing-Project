@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Threading.Tasks;
 using GodelTech.Owasp.Web.Models;
 
 namespace GodelTech.Owasp.Web.Repositories.Interfaces
 {
-    public interface IUserRepository
+    public interface IUserRepository : IBaseRepository<User>
     {
-        public User Get(string email, string password);
-        public User GetById(int id);
+        public Task<User> Get(string email, string password);
     }
 }

@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using GodelTech.Owasp.Web.Helpers;
 using GodelTech.Owasp.Web.Models;
 using GodelTech.Owasp.Web.Repositories.Interfaces;
@@ -22,9 +23,9 @@ namespace GodelTech.Owasp.Web.Services.Implementations
             _repository = repository;
         }
 
-        public AuthenticateResponse Authenticate(AuthenticateRequest model)
+        public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model)
         {
-            var user = _repository.Get(model.Username, model.Password);
+            var user = await _repository.Get(model.Username, model.Password);
 
             // return null if user not found
             if (user == null) return null;
@@ -35,7 +36,7 @@ namespace GodelTech.Owasp.Web.Services.Implementations
             return new AuthenticateResponse(user, token);
         }
 
-        // helper methods
+        #region helper methods
 
         private string GenerateJwtToken(User user)
         {
@@ -51,5 +52,7 @@ namespace GodelTech.Owasp.Web.Services.Implementations
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+        
+        #endregion
     }
 }

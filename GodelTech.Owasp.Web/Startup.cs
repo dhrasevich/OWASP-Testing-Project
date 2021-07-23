@@ -1,6 +1,6 @@
-using System.Collections.Generic;
+using System;
+using Audit.Core;
 using GodelTech.Owasp.Web.Helpers;
-using GodelTech.Owasp.Web.Repositories;
 using GodelTech.Owasp.Web.Repositories.Implementations;
 using GodelTech.Owasp.Web.Repositories.Interfaces;
 using GodelTech.Owasp.Web.Services.Implementations;
@@ -9,8 +9,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using System.Collections.Generic;
+using GodelTech.Owasp.Web.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace GodelTech.Owasp.Web
 {
@@ -28,15 +31,10 @@ namespace GodelTech.Owasp.Web
         {
             // configure strongly typed settings object
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-
-            services.AddTransient<IAlbumRepository, AlbumRepository>();
-            services.AddTransient<IGenreRepository, GenreRepository>();
-            services.AddTransient<IUserRepository, UserRepository>();
             
-            services.AddScoped<IUserService, UserService>();
-
-            services.AddControllers();
-
+            services.AddDbContext<OwaspContext>(options => options.UseSqlServer(Configuration.GetConnectionString("owasp")));
+            // services.AddDbContext<OwaspContext>(options => options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+            
             // Register the Swagger generator, defining 1 or more Swagger documents
             // and configure it
             services.AddSwaggerGen(options =>
@@ -78,36 +76,51 @@ namespace GodelTech.Owasp.Web
                     }
                 });
             });
+
+            services.AddTransient(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+            services.AddTransient<IAlbumRepository, AlbumRepository>();
+            services.AddTransient<IGenreRepository, GenreRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
+
+            services.AddScoped<IUserService, UserService>();
+
+            services.AddSingleton<ICryptographicService, CryptographicService>();
+            
+            // services.AddControllers();
+            services.AddControllersWithViews();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        /// <summary>
+        /// A6 - Security Misconfiguration - This method can accidentally introduce a security flaw. The env.IsDevelopment sets us to use
+        /// Developer Exception page which will link stack trace information to the browser window.
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="env"></param>
+        /// <param name="loggerFactory"></param>
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            // A10 - Logging & Auditing - adding log4net here to properly log out information.
+            loggerFactory.AddLog4Net();
+
+            // A6 - incorrect
+            app.UseDeveloperExceptionPage();
+
+            // A6 - correct
+            // if (env.IsDevelopment())
+            // {
+            //     app.UseDeveloperExceptionPage();
+            //     app.UseBrowserLink();
+            // }
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            // global cors policy
-            app.UseCors(x => x
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
 
             app.UseAuthentication();
             app.UseAuthorization();
 
             // custom jwt auth middleware
             app.UseMiddleware<JwtMiddleware>();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
@@ -120,6 +133,15 @@ namespace GodelTech.Owasp.Web
                 // To serve the Swagger UI at the app's root (http://localhost:<port>/),
                 // set the RoutePrefix property to an empty string
                 options.RoutePrefix = string.Empty;
+            });
+            
+            // A10 - Logging & Audit - Setup Audit to use log4net.
+            Audit.Core.Configuration.Setup()
+                .UseLog4net();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
             });
         }
     }

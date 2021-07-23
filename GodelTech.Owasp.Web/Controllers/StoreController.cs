@@ -1,6 +1,7 @@
 ﻿// using GodelTech.Owasp.Web.Helpers;
 using GodelTech.Owasp.Web.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace GodelTech.Owasp.Web.Controllers
 {
@@ -10,15 +11,18 @@ namespace GodelTech.Owasp.Web.Controllers
     public class StoreController : ControllerBase
     {
         private readonly IAlbumRepository _albumRepository;
+        private readonly ILogger<StoreController> _logger;
 
-        public StoreController(IAlbumRepository albumRepository)
+        public StoreController(IAlbumRepository albumRepository, ILogger<StoreController> logger)
         {
             _albumRepository = albumRepository;
+            _logger = logger;
         }
 
         [HttpGet("{id}")]
         public IActionResult Album(string id)
         {
+            _logger.LogWarning($"Getting album by ID {id}");
             return Ok(_albumRepository.Get(id));
         }
 
