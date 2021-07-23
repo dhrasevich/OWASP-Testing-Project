@@ -19,7 +19,9 @@ namespace GodelTech.Owasp.Web.Repositories.Implementations
         public Album Get(string id)
         {
             // id is straight from the URI
-            var sql = "SELECT * FROM Album WHERE AlbumId = " + id;
+            var sql = @"SELECT * FROM Album
+                         INNER JOIN Artist on Artist.ArtistId = Album.ArtistId
+                         WHERE AlbumId = " + id;
 
             using var connection = new SqlConnection(ConnectionString);
             using var cmd = new SqlCommand(sql, connection);
@@ -129,7 +131,7 @@ namespace GodelTech.Owasp.Web.Repositories.Implementations
                 ArtistId = GetFieldValue<int>(reader, nameof(Album.ArtistId)),
                 Title = GetFieldValue<string>(reader, nameof(Album.Title)),
                 Price = GetFieldValue<decimal>(reader, nameof(Album.Price)),
-                // Artist = BuildArtist(reader)
+                Artist = BuildArtist(reader)
             };
         }
 
