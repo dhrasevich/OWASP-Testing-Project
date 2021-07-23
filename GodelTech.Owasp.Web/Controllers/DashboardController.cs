@@ -29,9 +29,9 @@ namespace GodelTech.Owasp.Web.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Album> Import()
+        public IActionResult Import()
         {
-            return _albumRepository.GetList(0, int.MaxValue);
+            return Ok(_albumRepository.GetList(0, int.MaxValue));
         }
 
         //

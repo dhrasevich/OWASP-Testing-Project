@@ -11,17 +11,17 @@ namespace GodelTech.Owasp.Web.Controllers
     [Route("[controller]")]
     public class GenreController : ControllerBase
     {
-        private readonly IGenreRepository _repository;
+        private readonly IGenreRepository _genreRepository;
 
-        public GenreController(IGenreRepository repository)
+        public GenreController(IGenreRepository genreRepository)
         {
-            _repository = repository;
+            _genreRepository = genreRepository;
         }
 
         [HttpGet]
-        public IEnumerable<Genre> All()
+        public IActionResult All()
         {
-            return _repository.Get();
+            return Ok(_genreRepository.Get());
         }
     }
 }

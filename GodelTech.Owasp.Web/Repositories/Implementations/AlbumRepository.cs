@@ -129,7 +129,7 @@ namespace GodelTech.Owasp.Web.Repositories.Implementations
                 ArtistId = GetFieldValue<int>(reader, nameof(Album.ArtistId)),
                 Title = GetFieldValue<string>(reader, nameof(Album.Title)),
                 Price = GetFieldValue<decimal>(reader, nameof(Album.Price)),
-                Artist = BuildArtist(reader)
+                // Artist = BuildArtist(reader)
             };
         }
 
